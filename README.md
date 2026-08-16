@@ -4,8 +4,8 @@ Multimodal enterprise knowledge and assessment platform. The full
 implementation-ready specification lives in [`docs/spec/`](docs/spec/) —
 start with `00_MASTER_SPEC.md` and `18_IMPLEMENTATION_BACKLOG.md`.
 
-Current status: **Epic 4 — Parsers** (PDF, DOCX, PPTX, HTML and image
-parsing with fingerprinting; Epics 1–4 of the backlog).
+Current status: **Epic 5 — Connectors** (filesystem and Confluence
+connectors with incremental synchronization; Epics 1–5 of the backlog).
 
 ## Stack
 
@@ -47,6 +47,9 @@ uv run pytest          # tests (no database or LLM required)
 uv run ruff check .    # lint
 uv run mypy            # type check
 ```
+
+These three commands also run in CI (`.github/workflows/ci.yml`) on every
+push to `main` and on every pull request.
 
 The default profile works without any paid LLM API
 (`docs/spec/16_DOCKER_LOCAL.md`). AI enrichment, connectors and the Model
