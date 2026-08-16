@@ -24,6 +24,11 @@ class Settings(BaseSettings):
     s3_access_key: str = "minioadmin"
     s3_secret_key: str = "minioadmin"
 
+    # Dimension of the pgvector embedding column (02_DATABASE_SCHEMA.md:
+    # "vector(<configured_dimension>)"). Must match the embedding model
+    # chosen later via the Model Gateway.
+    embedding_dimension: int = 1536
+
 
 @lru_cache
 def get_settings() -> Settings:

@@ -4,7 +4,8 @@ Multimodal enterprise knowledge and assessment platform. The full
 implementation-ready specification lives in [`docs/spec/`](docs/spec/) —
 start with `00_MASTER_SPEC.md` and `18_IMPLEMENTATION_BACKLOG.md`.
 
-Current status: **Epic 1 — Bootstrap** (TASK-001 Repository, TASK-002 Docker).
+Current status: **Epic 2 — Domain and persistence** (domain models, database
+schema and S3/MinIO object storage; Epics 1–2 of the backlog).
 
 ## Stack
 
