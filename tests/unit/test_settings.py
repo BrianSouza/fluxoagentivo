@@ -18,6 +18,7 @@ def isolated_environment(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Non
         "S3_BUCKET",
         "S3_ACCESS_KEY",
         "S3_SECRET_KEY",
+        "PROCESSING__DUPLICATE_TEXT_THRESHOLD",
     ):
         monkeypatch.delenv(name, raising=False)
 
@@ -47,3 +48,53 @@ def test_dotenv_file_is_read(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) ->
 def test_get_settings_is_cached() -> None:
     get_settings.cache_clear()
     assert get_settings() is get_settings()
+
+
+class TestPolicyFile:
+    """Human-editable YAML policy (docs/spec/15_CONFIGURATION.md)."""
+
+    def test_defaults_apply_when_no_policy_file_exists(self) -> None:
+        # The autouse fixture runs from an empty tmp_path, so config/policy.yaml
+        # is absent here: a missing policy file must not break startup.
+        settings = Settings()
+        assert settings.processing.duplicate_text_threshold == 0.95
+        assert settings.relevance_weights.structural == 0.20
+
+    def test_policy_file_values_are_loaded(self, tmp_path: Path) -> None:
+        policy = tmp_path / "config"
+        policy.mkdir()
+        (policy / "policy.yaml").write_text(
+            "processing:\n"
+            "  duplicate_text_threshold: 0.80\n"
+            "relevance_weights:\n"
+            "  structural: 0.40\n"
+            "  semantic: 0.00\n"
+            "  relationship: 0.15\n"
+            "  visual: 0.15\n"
+            "  freshness: 0.10\n"
+            "  source_authority: 0.10\n"
+            "  historical_demand: 0.10\n"
+        )
+        settings = Settings()
+        assert settings.processing.duplicate_text_threshold == 0.80
+        assert settings.relevance_weights.structural == 0.40
+
+    def test_environment_overrides_the_policy_file(
+        self, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    ) -> None:
+        policy = tmp_path / "config"
+        policy.mkdir()
+        (policy / "policy.yaml").write_text(
+            "processing:\n  duplicate_text_threshold: 0.80\n"
+        )
+        monkeypatch.setenv("PROCESSING__DUPLICATE_TEXT_THRESHOLD", "0.55")
+        assert Settings().processing.duplicate_text_threshold == 0.55
+
+    def test_invalid_threshold_in_policy_file_is_rejected(self, tmp_path: Path) -> None:
+        policy = tmp_path / "config"
+        policy.mkdir()
+        (policy / "policy.yaml").write_text(
+            "processing:\n  duplicate_text_threshold: 1.5\n"
+        )
+        with pytest.raises(ValueError):
+            Settings()

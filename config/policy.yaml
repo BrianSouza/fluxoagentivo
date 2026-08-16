@@ -1,0 +1,23 @@
+# Human-editable processing policy (docs/spec/15_CONFIGURATION.md).
+#
+# Secrets never belong here — they come from environment variables.
+# Environment variables override every value below; nested keys use the
+# `__` delimiter, e.g. PROCESSING__DUPLICATE_TEXT_THRESHOLD=0.9
+
+processing:
+  duplicate_text_threshold: 0.95
+  duplicate_image_threshold: 0.98
+  semantic_duplicate_threshold: 0.92
+  image_deep_enrichment_threshold: 0.70
+  triage_index_threshold: 0.25
+  boilerplate_min_documents: 3
+
+# Relevance weights from 06_DEDUP_TRIAGE.md section 3. Must sum to 1.0.
+relevance_weights:
+  structural: 0.20
+  semantic: 0.20
+  relationship: 0.15
+  visual: 0.15
+  freshness: 0.10
+  source_authority: 0.10
+  historical_demand: 0.10

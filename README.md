@@ -4,8 +4,8 @@ Multimodal enterprise knowledge and assessment platform. The full
 implementation-ready specification lives in [`docs/spec/`](docs/spec/) —
 start with `00_MASTER_SPEC.md` and `18_IMPLEMENTATION_BACKLOG.md`.
 
-Current status: **Epic 5 — Connectors** (filesystem and Confluence
-connectors with incremental synchronization; Epics 1–5 of the backlog).
+Current status: **Epic 6 — Triage and dedup** (relevance policy and
+three-level deduplication; Epics 1–6 of the backlog).
 
 ## Stack
 
@@ -66,6 +66,7 @@ src/harness/
   config/           # Pydantic Settings
   observability/    # logging/tracing setup (future)
   cli/              # CLI entrypoints (future)
+config/             # human-editable policy (thresholds, relevance weights)
 migrations/         # Alembic migrations
 tests/              # unit (integration/e2e in later tasks)
 docker/             # container images
