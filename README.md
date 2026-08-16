@@ -4,8 +4,8 @@ Multimodal enterprise knowledge and assessment platform. The full
 implementation-ready specification lives in [`docs/spec/`](docs/spec/) —
 start with `00_MASTER_SPEC.md` and `18_IMPLEMENTATION_BACKLOG.md`.
 
-Current status: **Epic 2 — Domain and persistence** (domain models, database
-schema and S3/MinIO object storage; Epics 1–2 of the backlog).
+Current status: **Epic 3 — Processing engine** (idempotent processing runs
+and Celery stage queues; Epics 1–3 of the backlog).
 
 ## Stack
 

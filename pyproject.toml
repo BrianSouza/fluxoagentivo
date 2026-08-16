@@ -15,6 +15,7 @@ dependencies = [
     "structlog>=24.1",
     "pgvector>=0.5.0",
     "boto3>=1.43.72",
+    "celery[redis]>=5.6.3",
 ]
 
 [dependency-groups]
@@ -26,6 +27,7 @@ dev = [
     "mypy>=1.11",
     "moto[s3]>=5.2.2",
     "boto3-stubs[s3]>=1.43.72",
+    "celery-types>=0.26.0",
 ]
 
 [build-system]

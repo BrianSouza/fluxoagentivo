@@ -29,6 +29,10 @@ class Settings(BaseSettings):
     # chosen later via the Model Gateway.
     embedding_dimension: int = 1536
 
+    # Upper bound for automatic retries of transient failures
+    # (01_ARCHITECTURE.md, section 8).
+    celery_task_max_retries: int = 5
+
 
 @lru_cache
 def get_settings() -> Settings:
