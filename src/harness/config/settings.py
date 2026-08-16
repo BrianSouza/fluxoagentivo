@@ -64,6 +64,94 @@ class ProcessingSettings(BaseModel):
     boilerplate_min_documents: int = Field(default=3, ge=2)
 
 
+class ProviderSettings(BaseModel):
+    """A configured provider (08_MODEL_GATEWAY.md §8).
+
+    `api_key_ref` is a `secret://` reference, never a raw credential.
+    """
+
+    kind: Literal["fake", "ollama", "openai_compatible", "anthropic"] = "fake"
+    base_url: str | None = None
+    api_key_ref: str | None = None
+
+
+class PricingSettings(BaseModel):
+    input_per_million: float = Field(default=0.0, ge=0.0)
+    output_per_million: float = Field(default=0.0, ge=0.0)
+    cached_input_per_million: float | None = Field(default=None, ge=0.0)
+
+
+class ProfileSettings(BaseModel):
+    """Model profile (08_MODEL_GATEWAY.md §4)."""
+
+    provider: str
+    model: str
+    temperature: float | None = None
+    max_output_tokens: int | None = Field(default=None, gt=0)
+    pricing: PricingSettings = PricingSettings()
+    escalates_to: str | None = None
+    local_only: bool = False
+
+
+class BudgetSettings(BaseModel):
+    per_job_usd: float | None = Field(default=None, ge=0.0)
+    daily_usd: float | None = Field(default=None, ge=0.0)
+
+
+def _default_providers() -> dict[str, ProviderSettings]:
+    # The default profile works offline with no paid API, which
+    # 16_DOCKER_LOCAL.md §2 requires.
+    return {"fake": ProviderSettings(kind="fake")}
+
+
+def _default_profiles() -> dict[str, ProfileSettings]:
+    return {
+        name: ProfileSettings(provider="fake", model=f"fake-{name}")
+        for name in (
+            "cheap_classifier",
+            "image_deep",
+            "synthesis",
+            "answer",
+            "embedding_default",
+            "private_local",
+        )
+    }
+
+
+def _default_routes() -> dict[str, str]:
+    return {
+        "classification": "cheap_classifier",
+        "image_description": "image_deep",
+        "diagram_interpretation": "image_deep",
+        "page_synthesis": "synthesis",
+        "answer_generation": "answer",
+        "embedding": "embedding_default",
+        "rerank": "cheap_classifier",
+    }
+
+
+class ModelSettings(BaseModel):
+    """Providers, profiles and routes — all policy, never code."""
+
+    providers: dict[str, ProviderSettings] = Field(default_factory=_default_providers)
+    profiles: dict[str, ProfileSettings] = Field(default_factory=_default_profiles)
+    routes: dict[str, str] = Field(default_factory=_default_routes)
+    default_profile: str | None = "cheap_classifier"
+    budgets: BudgetSettings = BudgetSettings()
+
+    @model_validator(mode="after")
+    def _validate_references(self) -> "ModelSettings":
+        for name, profile in self.profiles.items():
+            if profile.provider not in self.providers:
+                raise ValueError(
+                    f"profile {name!r} names unknown provider {profile.provider!r}"
+                )
+        for task, profile_name in self.routes.items():
+            if profile_name not in self.profiles:
+                raise ValueError(f"route {task!r} names unknown profile {profile_name!r}")
+        return self
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -94,6 +182,7 @@ class Settings(BaseSettings):
 
     processing: ProcessingSettings = ProcessingSettings()
     relevance_weights: RelevanceWeightSettings = RelevanceWeightSettings()
+    models: ModelSettings = ModelSettings()
 
     @classmethod
     def settings_customise_sources(

@@ -4,8 +4,8 @@ Multimodal enterprise knowledge and assessment platform. The full
 implementation-ready specification lives in [`docs/spec/`](docs/spec/) —
 start with `00_MASTER_SPEC.md` and `18_IMPLEMENTATION_BACKLOG.md`.
 
-Current status: **Epic 6 — Triage and dedup** (relevance policy and
-three-level deduplication; Epics 1–6 of the backlog).
+Current status: **Epic 7 — Model Gateway** (provider-neutral inference with
+routing, escalation and cost telemetry; Epics 1–7 of the backlog).
 
 ## Stack
 
