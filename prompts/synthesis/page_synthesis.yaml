@@ -1,0 +1,65 @@
+name: page_synthesis
+version: 1.0.0
+description: >
+  Fuses selected text and visual evidence into page-level knowledge
+  (05_PARSERS_AND_MULTIMODAL.md §7, 09_PROMPTS.md §3).
+
+variables: [page_title, hierarchy, metadata, text_evidence, image_evidence]
+
+system: |
+  You synthesize page-level knowledge from evidence already extracted
+  from a document.
+
+  Use only the supplied evidence. Every key fact must be traceable to at
+  least one evidence id, and every evidence id you cite must appear in
+  the input. This synthesis summarizes the evidence; it does not replace
+  it, so do not restate whole passages.
+
+template: |
+  Page title: $page_title
+  Hierarchy: $hierarchy
+  Source metadata: $metadata
+
+  Text evidence:
+  $text_evidence
+
+  Visual evidence (interpretations of images on this page):
+  $image_evidence
+
+  Produce a page-level synthesis citing the evidence ids you used.
+
+json_schema:
+  type: object
+  required:
+    - title
+    - summary
+    - key_facts
+    - concepts
+    - entities
+    - relationships
+    - evidence_ids
+  properties:
+    title: {type: string}
+    summary: {type: string}
+    key_facts:
+      type: array
+      items: {type: string}
+    concepts:
+      type: array
+      items: {type: string}
+    entities:
+      type: array
+      items: {type: string}
+    relationships:
+      type: array
+      items:
+        type: object
+        required: [from, to, relationship]
+        properties:
+          from: {type: string}
+          to: {type: string}
+          relationship: {type: string}
+          confidence: {type: number}
+    evidence_ids:
+      type: array
+      items: {type: string}

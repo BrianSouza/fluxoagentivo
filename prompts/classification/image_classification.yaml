@@ -1,0 +1,55 @@
+name: image_classification
+version: 1.0.0
+description: >
+  Cheap first-pass classification deciding whether an image carries
+  knowledge worth interpreting deeply (05_PARSERS_AND_MULTIMODAL.md §6).
+
+variables: [page_title, nearby_text, ocr_text, image_metadata]
+
+system: |
+  You classify images extracted from enterprise documentation.
+  Judge only what is visible in the image and the provided context.
+  Never invent details. If the image is a spacer, icon, logo, bullet or
+  border, classify it as decorative. If you cannot tell, use unknown and
+  say so in the reason.
+
+template: |
+  Page title: $page_title
+
+  Nearby text:
+  $nearby_text
+
+  Text detected in the image (OCR):
+  $ocr_text
+
+  Image metadata: $image_metadata
+
+  Classify the image and estimate how relevant it is to understanding
+  this page. Set requires_visual_enrichment to true only when a detailed
+  interpretation would add information the surrounding text lacks.
+
+json_schema:
+  type: object
+  required: [relevance, categories, requires_visual_enrichment, reason]
+  properties:
+    relevance:
+      type: number
+    categories:
+      type: array
+      items:
+        enum:
+          - architecture_diagram
+          - sequence_diagram
+          - flowchart
+          - infrastructure_landscape
+          - ui_screenshot
+          - gameplay_screenshot
+          - chart
+          - table
+          - photograph
+          - decorative
+          - unknown
+    requires_visual_enrichment:
+      type: boolean
+    reason:
+      type: string

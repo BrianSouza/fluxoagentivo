@@ -4,8 +4,8 @@ Multimodal enterprise knowledge and assessment platform. The full
 implementation-ready specification lives in [`docs/spec/`](docs/spec/) —
 start with `00_MASTER_SPEC.md` and `18_IMPLEMENTATION_BACKLOG.md`.
 
-Current status: **Epic 7 — Model Gateway** (provider-neutral inference with
-routing, escalation and cost telemetry; Epics 1–7 of the backlog).
+Current status: **Epic 8 — Multimodal** (OCR, cost-aware image enrichment
+and page synthesis; Epics 1–8 of the backlog).
 
 ## Stack
 
@@ -67,6 +67,7 @@ src/harness/
   observability/    # logging/tracing setup (future)
   cli/              # CLI entrypoints (future)
 config/             # human-editable policy (thresholds, relevance weights)
+prompts/            # versioned prompt templates with JSON schemas
 migrations/         # Alembic migrations
 tests/              # unit (integration/e2e in later tasks)
 docker/             # container images

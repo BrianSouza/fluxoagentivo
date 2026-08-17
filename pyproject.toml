@@ -35,6 +35,7 @@ dev = [
     "boto3-stubs[s3]>=1.43.72",
     "celery-types>=0.26.0",
     "types-beautifulsoup4>=4.12.0.20250516",
+    "types-pyyaml>=6.0.12.20260815",
 ]
 
 [build-system]
