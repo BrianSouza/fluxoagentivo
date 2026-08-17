@@ -9,6 +9,7 @@ counting as zero, so early scores are not systematically depressed.
 
 from dataclasses import dataclass, fields
 
+from harness.domain.common.decay import exponential_decay
 from harness.domain.common.values import validate_confidence
 from harness.domain.triage.signals import DeterministicSignals
 
@@ -97,11 +98,9 @@ def relationship_score(signals: DeterministicSignals) -> float:
 
 
 def freshness(signals: DeterministicSignals) -> float:
-    """Exponential-ish decay; unknown age is neutral, not stale."""
-    if signals.modification_age_days is None:
-        return _NEUTRAL
-    decayed = 1.0 / (1.0 + signals.modification_age_days / _FRESHNESS_HALF_LIFE_DAYS)
-    return max(0.0, min(1.0, decayed))
+    return exponential_decay(
+        signals.modification_age_days, half_life_days=_FRESHNESS_HALF_LIFE_DAYS, neutral=_NEUTRAL
+    )
 
 
 def derive_components(

@@ -19,6 +19,7 @@ from pydantic_settings import (
     YamlConfigSettingsSource,
 )
 
+from harness.domain.retrieval.models import RetrievalWeights
 from harness.domain.triage.relevance import RelevanceWeights
 
 POLICY_FILE = Path("config/policy.yaml")
@@ -51,6 +52,41 @@ class RelevanceWeightSettings(BaseModel):
             source_authority=self.source_authority,
             historical_demand=self.historical_demand,
         )
+
+
+class RetrievalWeightSettings(BaseModel):
+    """Hybrid retrieval weights (07_RETRIEVAL.md §3) — policy, not code."""
+
+    semantic: float = 0.35
+    lexical: float = 0.25
+    metadata: float = 0.15
+    authority: float = 0.10
+    freshness: float = 0.10
+    relationship: float = 0.05
+
+    @model_validator(mode="after")
+    def _validate_domain_invariants(self) -> "RetrievalWeightSettings":
+        self.to_domain()
+        return self
+
+    def to_domain(self) -> RetrievalWeights:
+        return RetrievalWeights(
+            semantic=self.semantic,
+            lexical=self.lexical,
+            metadata=self.metadata,
+            authority=self.authority,
+            freshness=self.freshness,
+            relationship=self.relationship,
+        )
+
+
+class RetrievalSettings(BaseModel):
+    """Retrieval pool/dedup knobs (07_RETRIEVAL.md §2, 06_DEDUP_TRIAGE.md §7)."""
+
+    candidate_pool_size: int = Field(default=100, ge=1)
+    max_duplicates: int = Field(default=1, ge=0)
+    freshness_half_life_days: float = Field(default=180.0, gt=0.0)
+    relationship_expansion_limit: int = Field(default=20, ge=0)
 
 
 class ProcessingSettings(BaseModel):
@@ -183,6 +219,8 @@ class Settings(BaseSettings):
     processing: ProcessingSettings = ProcessingSettings()
     relevance_weights: RelevanceWeightSettings = RelevanceWeightSettings()
     models: ModelSettings = ModelSettings()
+    retrieval: RetrievalSettings = RetrievalSettings()
+    retrieval_weights: RetrievalWeightSettings = RetrievalWeightSettings()
 
     @classmethod
     def settings_customise_sources(

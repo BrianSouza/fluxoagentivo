@@ -69,6 +69,21 @@ models:
     per_job_usd: null
     daily_usd: null
 
+# Hybrid retrieval (07_RETRIEVAL.md). Weights must sum to 1.0.
+retrieval:
+  candidate_pool_size: 100
+  max_duplicates: 1
+  freshness_half_life_days: 180.0
+  relationship_expansion_limit: 20
+
+retrieval_weights:
+  semantic: 0.35
+  lexical: 0.25
+  metadata: 0.15
+  authority: 0.10
+  freshness: 0.10
+  relationship: 0.05
+
 # Relevance weights from 06_DEDUP_TRIAGE.md section 3. Must sum to 1.0.
 relevance_weights:
   structural: 0.20

@@ -4,8 +4,8 @@ Multimodal enterprise knowledge and assessment platform. The full
 implementation-ready specification lives in [`docs/spec/`](docs/spec/) —
 start with `00_MASTER_SPEC.md` and `18_IMPLEMENTATION_BACKLOG.md`.
 
-Current status: **Epic 8 — Multimodal** (OCR, cost-aware image enrichment
-and page synthesis; Epics 1–8 of the backlog).
+Current status: **Epic 9 — Search** (hybrid retrieval, embeddings,
+reranking and duplicate suppression; Epics 1–9 of the backlog).
 
 ## Stack
 
