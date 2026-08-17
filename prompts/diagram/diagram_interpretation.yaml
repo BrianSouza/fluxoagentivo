@@ -1,0 +1,86 @@
+name: diagram_interpretation
+version: 1.0.0
+description: >
+  Schema-constrained multimodal interpretation of a diagram or screenshot
+  (05_PARSERS_AND_MULTIMODAL.md §5).
+
+variables: [page_title, nearby_text, ocr_text]
+
+system: |
+  You interpret technical diagrams and screenshots from enterprise
+  documentation.
+
+  Report only what is visible. Never claim invisible details as facts.
+  Every relationship you report must connect two components you also
+  listed. When a label is unreadable or a connection is ambiguous, leave
+  it out of components/relationships and record it in uncertainties
+  instead. An incomplete but accurate reading is correct; a complete but
+  invented one is a failure.
+
+template: |
+  Source page title: $page_title
+
+  Text near the image on the page:
+  $nearby_text
+
+  Text detected inside the image (OCR):
+  $ocr_text
+
+  Interpret the attached image.
+
+json_schema:
+  type: object
+  required:
+    - image_type
+    - summary
+    - components
+    - relationships
+    - visible_text
+    - business_context
+    - technical_context
+    - uncertainties
+  properties:
+    image_type:
+      enum:
+        - architecture_diagram
+        - sequence_diagram
+        - flowchart
+        - infrastructure_landscape
+        - ui_screenshot
+        - gameplay_screenshot
+        - chart
+        - table
+        - photograph
+        - decorative
+        - unknown
+    summary:
+      type: string
+    components:
+      type: array
+      items:
+        type: object
+        required: [name, type, description]
+        properties:
+          name: {type: string}
+          type: {type: string}
+          description: {type: string}
+    relationships:
+      type: array
+      items:
+        type: object
+        required: [from, to, relationship]
+        properties:
+          from: {type: string}
+          to: {type: string}
+          relationship: {type: string}
+          confidence: {type: number}
+    visible_text:
+      type: array
+      items: {type: string}
+    business_context:
+      type: string
+    technical_context:
+      type: string
+    uncertainties:
+      type: array
+      items: {type: string}
